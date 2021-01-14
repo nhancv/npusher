@@ -54,20 +54,20 @@ class _MyAppState extends State<MyApp> {
       print('initPusher: ${e.message}');
     }
 
-    _pusher.connect((previousState, currentState) async {
-      if (currentState.toLowerCase() == 'connected') {
-        final NChannel channel = await _pusher.subscribe('event');
-        await _pusher.bindEchoPublic(channel, 'OrderCreated', (NEvent event) {
-          print('event: $event');
-        });
-        await _pusher.echoPresencePeriodicStart('event-presence',
-            onEventHere: (NEvent event) {
-          print('onEventHere: $event');
-        });
-      }
-    }, (message, code, exception) {
-      print('error: $message');
-    });
+    // _pusher.connect((previousState, currentState) async {
+    //   if (currentState.toLowerCase() == 'connected') {
+    //     final NChannel channel = await _pusher.subscribe('event');
+    //     await _pusher.bindEchoPublic(channel, 'OrderCreated', (NEvent event) {
+    //       print('event: $event');
+    //     });
+    //     await _pusher.echoPresencePeriodicStart('event-presence',
+    //         onEventHere: (NEvent event) {
+    //       print('onEventHere: $event');
+    //     });
+    //   }
+    // }, (message, code, exception) {
+    //   print('error: $message');
+    // });
   }
 
   @override

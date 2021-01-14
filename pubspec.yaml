@@ -1,6 +1,6 @@
 name: npusher
 description: Flutter pusher client, laravel echo
-version: 1.0.2
+version: 1.0.3
 homepage: https://github.com/nhancv/npusher
 
 environment:
