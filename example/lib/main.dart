@@ -32,7 +32,7 @@ class _MyAppState extends State<MyApp> {
       TextEditingController(text: "event-name");
   final TextEditingController triggerController =
       TextEditingController(text: "client-trigger");
-  final NPusher nPusher = NPusher();
+  final NPusher _pusher = NPusher();
 
   @override
   void initState() {
@@ -42,7 +42,7 @@ class _MyAppState extends State<MyApp> {
 
   Future<void> initPusher() async {
     try {
-      await nPusher.init(
+      await _pusher.init(
           appKey: 'nhancv',
           authUrl: 'https://nhancv.com/api/mobile/broadcasting/auth',
           headers: <String, String>{
@@ -54,20 +54,20 @@ class _MyAppState extends State<MyApp> {
       print('initPusher: ${e.message}');
     }
 
-    // nPusher.connect((previousState, currentState) async {
-    //   if (currentState.toLowerCase() == 'connected') {
-    //     await nPusher.bindEchoPublic('event', 'OrderCreated',
-    //         (NEvent event) {
-    //       print('event: $event');
-    //     });
-    //     await nPusher.echoPresencePeriodicStart('event-presence',
-    //         onEventHere: (NEvent event) {
-    //       print('onEventHere: $event');
-    //     });
-    //   }
-    // }, (message, code, exception) {
-    //   print('error: $message');
-    // });
+    _pusher.connect((previousState, currentState) async {
+      if (currentState.toLowerCase() == 'connected') {
+        final NChannel channel = await _pusher.subscribe('event');
+        await _pusher.bindEchoPublic(channel, 'OrderCreated', (NEvent event) {
+          print('event: $event');
+        });
+        await _pusher.echoPresencePeriodicStart('event-presence',
+            onEventHere: (NEvent event) {
+          print('onEventHere: $event');
+        });
+      }
+    }, (message, code, exception) {
+      print('error: $message');
+    });
   }
 
   @override
@@ -90,7 +90,7 @@ class _MyAppState extends State<MyApp> {
                   RaisedButton(
                     child: Text("Connect"),
                     onPressed: () {
-                      nPusher.connect((previousState, currentState) {
+                      _pusher.connect((previousState, currentState) {
                         if (mounted)
                           setState(() {
                             connectionState = currentState;
@@ -103,7 +103,7 @@ class _MyAppState extends State<MyApp> {
                   RaisedButton(
                     child: Text("Disconnect"),
                     onPressed: () async {
-                      await nPusher.disconnect();
+                      await _pusher.disconnect();
                       setState(() {
                         connectionState = null;
                         event = null;
@@ -125,7 +125,7 @@ class _MyAppState extends State<MyApp> {
                         child: Text("Subscribe"),
                         onPressed: () async {
                           channel =
-                              await nPusher.subscribe(channelController.text);
+                              await _pusher.subscribe(channelController.text);
                           print('Subscribe');
                         },
                       )
@@ -143,7 +143,7 @@ class _MyAppState extends State<MyApp> {
                       RaisedButton(
                         child: Text("Unsubscribe"),
                         onPressed: () async {
-                          await nPusher.unsubscribe(channelController.text);
+                          await _pusher.unsubscribe(channelController.text);
                           channel = null;
                           print('Unsubscribe');
                         },

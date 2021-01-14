@@ -6,7 +6,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter_pusher/pusher.dart';
 
 class NPusher {
-  bool _enableLogging = true;
+  bool enableLogging = true;
 
   Future<void> init({
     String appKey = '',
@@ -15,7 +15,7 @@ class NPusher {
     String cluster = 'mt1',
     bool enableLogging = true,
   }) {
-    _enableLogging = enableLogging;
+    this.enableLogging = enableLogging;
     return Pusher.init(
       appKey,
       PusherOptions(
@@ -51,7 +51,7 @@ class NPusher {
 
   Future<NChannel> subscribe(String channelName) async {
     final Channel channel = await Pusher.subscribe(channelName);
-    if (_enableLogging) {
+    if (enableLogging) {
       print('subscribe: $channelName');
     }
     return NChannel(channel);
@@ -59,33 +59,35 @@ class NPusher {
 
   Future<void> unsubscribe(String channelName) async {
     await Pusher.unsubscribe(channelName);
-    if (_enableLogging) {
+    if (enableLogging) {
       print('unsubscribe: $channelName');
     }
   }
 
   /// Echo bind
-  Future<NChannel> bindEchoPublic(
-    String channelName,
+  String getEchoEventName(String eventName) {
+    return 'App\\Events\\$eventName';
+  }
+
+  Future<void> bindEchoPublic(
+    NChannel channel,
     String eventName,
     void Function(NEvent event) onEvent,
   ) async {
-    final NChannel channel = await subscribe(channelName);
-    final String fullEventName = 'App\\Events\\$eventName';
+    final String fullEventName = getEchoEventName(eventName);
     await channel.bind(fullEventName, onEvent);
-    if (_enableLogging) {
-      print('bindEchoPublic: $channelName:$fullEventName');
+    if (enableLogging) {
+      print('bindEchoPublic: ${channel.channel?.name}:$fullEventName');
     }
-    return channel;
   }
 
   Future<void> unbindEchoPublic(
     NChannel channel,
     String eventName,
   ) async {
-    final String fullEventName = 'App\\Events\\$eventName';
+    final String fullEventName = getEchoEventName(eventName);
     await channel.unbind(fullEventName);
-    if (_enableLogging) {
+    if (enableLogging) {
       print('unbindEchoPublic: ${channel?.channel?.name}:$fullEventName');
     }
   }
@@ -113,7 +115,7 @@ class NPusher {
       await channel.bind('pusher:member_removed', onEventLeave);
     }
 
-    if (_enableLogging) {
+    if (enableLogging) {
       print('bindEchoPresence: $fullChannelName');
     }
     return channel;

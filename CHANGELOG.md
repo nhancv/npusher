@@ -1,3 +1,7 @@
+## [1.0.2] - 14.01.2021.
+
+* Update subscribe echo public.
+
 ## [1.0.1] - 14.01.2021.
 
 * Update example.
