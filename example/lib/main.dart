@@ -56,11 +56,11 @@ class _MyAppState extends State<MyApp> {
 
     // nPusher.connect((previousState, currentState) async {
     //   if (currentState.toLowerCase() == 'connected') {
-    //     await nPusher.bindEchoPublic('event.15', 'ChatMessageCreated',
+    //     await nPusher.bindEchoPublic('event', 'OrderCreated',
     //         (NEvent event) {
     //       print('event: $event');
     //     });
-    //     await nPusher.echoPresencePeriodicStart('event-presence.15',
+    //     await nPusher.echoPresencePeriodicStart('event-presence',
     //         onEventHere: (NEvent event) {
     //       print('onEventHere: $event');
     //     });
