@@ -6,7 +6,9 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter_pusher/pusher.dart';
 
 class NPusher {
+  final Map<String, Channel> channelMap = <String, Channel>{};
   bool enableLogging = true;
+  bool connected = false;
 
   Future<void> init({
     String appKey = '',
@@ -35,6 +37,7 @@ class NPusher {
     Function(String message, String code, String exception) onError,
   ) {
     return Pusher.connect(onConnectionStateChange: (ConnectionStateChange x) {
+      connected = x.currentState.toLowerCase() == 'connected';
       if (onConnectionStateChange != null) {
         onConnectionStateChange(x.previousState, x.currentState);
       }
@@ -45,20 +48,38 @@ class NPusher {
     });
   }
 
-  Future<void> disconnect() {
-    return Pusher.disconnect();
+  Future<void> disconnect() async {
+    List<String> channelNames = channelMap.entries.map((e) => e.key).toList();
+    for (String name in channelNames) {
+      await unsubscribe(name);
+    }
+    channelMap.clear();
+    Pusher.eventCallbacks.clear();
+    await Pusher.disconnect();
+    connected = false;
   }
 
   Future<NChannel> subscribe(String channelName) async {
-    final Channel channel = await Pusher.subscribe(channelName);
-    if (enableLogging) {
-      print('subscribe: $channelName');
+    if (connected) {
+      if (channelMap.containsKey(channelName)) {
+        await unsubscribe(channelName);
+        channelMap.remove(channelName);
+      }
+      final Channel channel = await Pusher.subscribe(channelName);
+      channelMap.putIfAbsent(channelName, () => channel);
+      if (enableLogging) {
+        print('subscribe: $channelName');
+      }
+      return NChannel(channel);
     }
-    return NChannel(channel);
+    return null;
   }
 
   Future<void> unsubscribe(String channelName) async {
     await Pusher.unsubscribe(channelName);
+    if (channelMap.containsKey(channelName)) {
+      channelMap.remove(channelName);
+    }
     if (enableLogging) {
       print('unsubscribe: $channelName');
     }
@@ -75,7 +96,7 @@ class NPusher {
     void Function(NEvent event) onEvent,
   ) async {
     final String fullEventName = getEchoEventName(eventName);
-    await channel.bind(fullEventName, onEvent);
+    await channel?.bind(fullEventName, onEvent);
     if (enableLogging) {
       print('bindEchoPublic: ${channel.channel?.name}:$fullEventName');
     }
@@ -86,7 +107,7 @@ class NPusher {
     String eventName,
   ) async {
     final String fullEventName = getEchoEventName(eventName);
-    await channel.unbind(fullEventName);
+    await channel?.unbind(fullEventName);
     if (enableLogging) {
       print('unbindEchoPublic: ${channel?.channel?.name}:$fullEventName');
     }
@@ -103,22 +124,32 @@ class NPusher {
   }) async {
     final String fullChannelName = 'presence-$channelName';
     final NChannel channel = await subscribe(fullChannelName);
-
     if (onEventHere != null) {
-      await channel.bind('pusher:subscription_succeeded', onEventHere);
+      await channel?.bind('pusher:subscription_succeeded', onEventHere);
     }
     if (onEventJoin != null) {
-      await channel.bind('pusher:member_added', onEventJoin);
+      await channel?.bind('pusher:member_added', onEventJoin);
     }
 
     if (onEventLeave != null) {
-      await channel.bind('pusher:member_removed', onEventLeave);
+      await channel?.bind('pusher:member_removed', onEventLeave);
     }
 
     if (enableLogging) {
       print('bindEchoPresence: $fullChannelName');
     }
     return channel;
+  }
+
+  Future<void> unbindEchoPresence(NChannel nChannel,
+      {bool onEventJoin = false, bool onEventLeave = false}) async {
+    await nChannel.unbind('pusher:subscription_succeeded');
+    if (onEventJoin) {
+      await nChannel.unbind('pusher:member_added');
+    }
+    if (onEventLeave) {
+      await nChannel.unbind('pusher:member_removed');
+    }
   }
 
   Future<Timer> echoPresencePeriodicStart(
@@ -128,7 +159,12 @@ class NPusher {
   }) async {
     NChannel channel;
     return Timer.periodic(duration, (Timer timer) async {
+      if(connected == false) {
+        timer.cancel();
+        return;
+      }
       if (channel != null) {
+        await unbindEchoPresence(channel);
         await unsubscribe(channel.channel?.name);
       }
       channel = await bindEchoPresence(channelName, onEventHere: onEventHere);
