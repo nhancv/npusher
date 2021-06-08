@@ -1,11 +1,10 @@
 name: npusher
 description: Flutter pusher client, laravel echo
-version: 1.0.5
+version: 1.0.6
 homepage: https://github.com/nhancv/npusher
 
 environment:
   sdk: ">=2.7.0 <3.0.0"
-  flutter: ">=1.17.0"
 
 dependencies:
   flutter:
