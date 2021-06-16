@@ -141,8 +141,7 @@ class NPusher {
     return channel;
   }
 
-  Future<void> unbindEchoPresence(NChannel nChannel,
-      {bool onEventJoin = false, bool onEventLeave = false}) async {
+  Future<void> unbindEchoPresence(NChannel nChannel, {bool onEventJoin = false, bool onEventLeave = false}) async {
     await nChannel.unbind('pusher:subscription_succeeded');
     if (onEventJoin) {
       await nChannel.unbind('pusher:member_added');
@@ -159,15 +158,22 @@ class NPusher {
   }) async {
     NChannel channel;
     return Timer.periodic(duration, (Timer timer) async {
-      if(connected == false) {
-        timer.cancel();
-        return;
-      }
-      if (channel != null) {
-        await unbindEchoPresence(channel);
-        await unsubscribe(channel.channel?.name);
-      }
-      channel = await bindEchoPresence(channelName, onEventHere: onEventHere);
+      await runZonedGuarded(() async {
+        if (connected == false) {
+          timer.cancel();
+          return;
+        }
+        if (channel != null) {
+          await unbindEchoPresence(channel);
+          await unsubscribe(channel.channel?.name);
+        }
+        channel = await bindEchoPresence(channelName, onEventHere: onEventHere);
+      }, (Object e, StackTrace st) {
+        //Platform ex: Already subscribed
+        if (enableLogging) {
+          print('echoPresencePeriodicStart: $e');
+        }
+      });
     });
   }
 }
@@ -178,8 +184,7 @@ class NChannel {
   final Channel channel;
 
   /// Bind to listen for events sent on the given channel
-  Future<void> bind(
-      String eventName, void Function(NEvent event) onEvent) async {
+  Future<void> bind(String eventName, void Function(NEvent event) onEvent) async {
     await channel?.bind(eventName, (Event event) {
       if (onEvent != null) {
         onEvent(NEvent(event));
