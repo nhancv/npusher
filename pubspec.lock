@@ -60,7 +60,7 @@ packages:
     description:
       path: "."
       ref: HEAD
-      resolved-ref: f2147cb3bee4a4a5a19b767a8925e3963c2e003f
+      resolved-ref: 3c1381b810124cdad10e8d6a6e00ad8610c552b1
       url: "git://github.com/nhancv/flutter_pusher.git"
     source: git
     version: "1.0.3"
