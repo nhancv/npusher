@@ -1,3 +1,9 @@
+## [1.0.7] - 04.07.2021.
+
+* Update core
+* Min iOS version `11.0`
+* Flutter sdk `1.22.6`
+
 ## [1.0.5] - 05.03.2021.
 
 * Update ios 10.0

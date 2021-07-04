@@ -1,15 +1,13 @@
 PODS:
-  - CryptoSwift (0.15.0)
   - Flutter (1.0.0)
-  - flutter_pusher (1.0.2):
+  - flutter_pusher (1.0.3):
     - Flutter
-    - PusherSwift (= 7.2.0)
-  - PusherSwift (7.2.0):
-    - CryptoSwift (~> 0.9)
-    - ReachabilitySwift (= 4.3.0)
-    - Starscream (~> 3.0.5)
-  - ReachabilitySwift (4.3.0)
-  - Starscream (3.0.6)
+    - PusherSwift (~> 8.0.0)
+  - PusherSwift (8.0.0):
+    - ReachabilitySwift (~> 5.0)
+    - Starscream (~> 3.1)
+  - ReachabilitySwift (5.0.0)
+  - Starscream (3.1.1)
 
 DEPENDENCIES:
   - Flutter (from `Flutter`)
@@ -17,7 +15,6 @@ DEPENDENCIES:
 
 SPEC REPOS:
   trunk:
-    - CryptoSwift
     - PusherSwift
     - ReachabilitySwift
     - Starscream
@@ -29,13 +26,12 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/flutter_pusher/ios"
 
 SPEC CHECKSUMS:
-  CryptoSwift: 769f58a9e89f64e8796c2e59ce5f002dc81a2438
   Flutter: 0e3d915762c693b495b44d77113d4970485de6ec
-  flutter_pusher: dc41a8d13038fe79f9bf055b5794b210b725379f
-  PusherSwift: a5369a01e8a9106b4897e9186265af1426726062
-  ReachabilitySwift: 408477d1b6ed9779dba301953171e017c31241f3
-  Starscream: ef3ece99d765eeccb67de105bfa143f929026cf5
+  flutter_pusher: 95948afd636c398c27878b6d9714fbc388eec32c
+  PusherSwift: 8f18b7beaf383e0475607ab6a3f89f477637fb21
+  ReachabilitySwift: 985039c6f7b23a1da463388634119492ff86c825
+  Starscream: 4bb2f9942274833f7b4d296a55504dcfc7edb7b0
 
-PODFILE CHECKSUM: aafe91acc616949ddb318b77800a7f51bffa2a4c
+PODFILE CHECKSUM: 7368163408c647b7eb699d0d788ba6718e18fb8d
 
-COCOAPODS: 1.9.3
+COCOAPODS: 1.10.1

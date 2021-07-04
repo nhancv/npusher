@@ -60,10 +60,10 @@ packages:
     description:
       path: "."
       ref: HEAD
-      resolved-ref: b0e32ed0289f61183287e9516614b14f908a1cc5
+      resolved-ref: f2147cb3bee4a4a5a19b767a8925e3963c2e003f
       url: "git://github.com/nhancv/flutter_pusher.git"
     source: git
-    version: "1.0.2"
+    version: "1.0.3"
   flutter_test:
     dependency: "direct dev"
     description: flutter
